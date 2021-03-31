@@ -4,7 +4,7 @@
 #
 
 my_packages = c("bslib", "modeldata","lubridate","timetk",
-	"parsnip","rsample","modeltime","plotly","gtrendsR")
+	"parsnip","rsample","modeltime","plotly","gtrendsR","anytime")
 
 install_if_missing = function(p) {
   if (p %in% rownames(installed.packages()) == FALSE) {
