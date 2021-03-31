@@ -12,6 +12,7 @@ library(parsnip)
 library(rsample)
 library(modeltime)
 library(lubridate)
+library(anytime)
 
 # Widgets
 library(plotly)
@@ -29,25 +30,24 @@ nytherapydata <- gtrends(keyword="therapy near me",geo="US-NY")
 njtherapydata <- gtrends(keyword="therapy near me",geo="US-NJ")
 
 
+
 #Extract interest over time
-ustrends <- cbind(as.Date(decimal_date(ymd(ustherapydata$interest_over_time$date))),
-                  ustherapydata$interest_over_time$hits)
-usts <- ts(data=ustrends[,-1],start=ustrends[1,1],frequency = 52)
+ustrends <- data.frame(anytime::anydate(ustherapydata$interest_over_time$date),
+                       ustherapydata$interest_over_time$hits)
 
-nytrends <- cbind(as.Date(decimal_date(ymd(nytherapydata$interest_over_time$date))),
-                  nytherapydata$interest_over_time$hits)
-nyts <- ts(data=nytrends[,-1],start=nytrends[1,1],frequency = 52)
+nytrends <- data.frame(anytime::anydate(nytherapydata$interest_over_time$date),
+                       nytherapydata$interest_over_time$hits)
 
-njtrends <- cbind(as.Date(decimal_date(ymd(njtherapydata$interest_over_time$date))),
-                  njtherapydata$interest_over_time$hits)
-njts <- ts(data=njtrends[,-1],start=njtrends[1,1],frequency = 52)
+njtrends <- data.frame(anytime::anydate(njtherapydata$interest_over_time$date),
+                       njtherapydata$interest_over_time$hits)
 
 #Data list
 data_list <- list(
-  "United States" = usts,
-  "New York" = nyts,
-  "New Jersey" = njts
+  "United States" = ustrends,
+  "New York" = nytrends,
+  "New Jersey" = njtrends
 )
+
 
 
 # 2.0 Server
@@ -63,9 +63,8 @@ server = function(input,output) {
   output$forecastplot <- renderPlotly ({
     #generate df
     
-    df <- fortify(rv$data_set)
-    df$Index <- date_decimal(df$Index)
-    colnames(df)<- c("Date","Interest")
+    df <- rv$data_set
+    colnames(df)<-c("Date","Interest")
     
     
     #Split Data 80/20
@@ -75,7 +74,7 @@ server = function(input,output) {
     
     # Model 1: AUTO_ARIMA
     
-    model_fit_arima <- arima_reg() %>% 
+    model_fit_arima <- arima_reg(seasonal_period = 52) %>% 
       set_engine(engine = "auto_arima") %>% 
       fit(Interest ~ Date,data=training(splits)) 
     
