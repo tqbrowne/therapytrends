@@ -14,4 +14,4 @@ install_if_missing = function(p) {
 
 invisible(sapply(my_packages, install_if_missing))
 
-install.packages("modeltime_0.50.tar.gz", repos=NULL, type="source")
+install.packages("/app/modeltime_0.5.0.tar.gz", repos=NULL, type="source")
