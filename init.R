@@ -3,7 +3,7 @@
 # Example R code to install packages if not already installed
 #
 
-my_packages = c("bslib", "modeldata","lubridate","timetk",
+my_packages = c("tidyverse","bslib", "modeldata","lubridate","timetk",
 	"parsnip","rsample","plotly","gtrendsR","anytime")
 
 install_if_missing = function(p) {
