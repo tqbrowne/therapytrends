@@ -1,6 +1,7 @@
 # Shiny
 library(shiny)
 library(bslib)
+library(plotly)
 
 
 #1.0 User interface
